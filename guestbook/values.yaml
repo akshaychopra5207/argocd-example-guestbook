@@ -1,0 +1,306 @@
+# Default values for Talabat web service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#secret:
+#  enabled: true
+#  name: callservice-secret
+#  data: {}
+
+
+# Because this is a parent chart, we must specify configuration for the
+# 'service' chart by defning it insite the 'service' section.
+# https://helm.sh/docs/chart_template_guide/subcharts_and_globals/
+service:
+  replicas: 1
+  env: prod
+
+# We use Traefik as our ingress controller. Traefik intercepts and routes every
+# incoming request based on the path, the host, headers, and so on ...
+# For more information, visit https://docs.traefik.io/routing/router
+  ingress:
+    enabled: true
+    rules:
+      - Host(`o11y-bot.talabat.com`) && PathPrefix(`/r2d2`)
+
+  image:
+    tag: v1
+    repository: 457710302499.dkr.ecr.eu-west-2.amazonaws.com/talabat-observability/r2d2-bot
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+  containerPort: 80
+  service:
+    type: ClusterIP
+    port: 80
+
+  revisionHistoryLimit: 10
+  rollingUpdate:
+    maxUnavailable: 50%
+    maxSurge: 25%
+
+# You must always specify how much of each resource a container needs.
+# https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  resources:
+    limits:
+      cpu: 500m
+      memory: 250Mi
+    requests:
+      cpu: 250m
+      memory: 128Mi
+
+# The kubelet uses readiness probes to know when a container is ready to start accepting traffic.
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  readinessProbe:
+    httpGet:
+      path: /r2d2/probeCheck
+      port: 80
+      scheme: HTTP
+    initialDelaySeconds: 10
+    timeoutSeconds: 3
+    periodSeconds: 5
+    successThreshold: 2
+    failureThreshold: 2
+
+# The kubelet uses liveness probes to know when to restart a container.
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    tcpSocket:
+      port: 80
+    initialDelaySeconds: 15
+    timeoutSeconds: 2
+    periodSeconds: 15
+    successThreshold: 1
+    failureThreshold: 5
+
+  environment:
+    - name: APP_MODE
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: APP_MODE
+    - name: APP_PORT
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: APP_PORT
+    - name: SLACK_BOT_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: SLACK_BOT_TOKEN
+    - name: SLACK_SIGNING_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: SLACK_SIGNING_SECRET
+    - name: SLACK_CHANNEL_ID
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: SLACK_CHANNEL_ID
+    - name: ONCALL_SLACK_CHANNEL_ID
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: ONCALL_SLACK_CHANNEL_ID
+    - name: DB_SERVER
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: DB_SERVER
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: DB_USER
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: DB_PASSWORD
+    - name: DB_PORT
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: DB_PORT
+    - name: DB_NAME
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: DB_NAME
+    - name: SRE_BOT_ONCALL_OPSGENIE_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: SRE_BOT_ONCALL_OPSGENIE_API_KEY
+    - name: OPSGENIE_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: OPSGENIE_API_KEY
+    - name: STATUSPAGE_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: STATUSPAGE_API_KEY
+    - name: STATUSPAGE_PAGE_ID
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: STATUSPAGE_PAGE_ID
+    - name: STATUSPAGE_ORD_ID
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: STATUSPAGE_ORD_ID
+    - name: STATUSPAGE_BASE_URL
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: STATUSPAGE_BASE_URL
+    - name: BOT_COMMAND
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: BOT_COMMAND
+    - name: OBSERVABILITY_BOT_ID
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: OBSERVABILITY_BOT_ID
+    - name: GOOGLE_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: GOOGLE_TOKEN
+    - name: TEST_CHANNEL_ID
+      valueFrom:
+        secretKeyRef:
+          name: talabat-observability-r2d2-bot
+          key: TEST_CHANNEL_ID
+
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: false
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  affinity: {}
+
+  nodeSelector: {}
+
+  tolerations: []
+
+# Horizontal Pod Autoscaler automatically scales the number of pods based on CPU utilization.
+# https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+  horizontalPodAutoscaler:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 80
+
+# Vertical Pod autoscaling can recommend values for CPU and memory requests and limits,
+# or it can automatically update the values.
+# https://cloud.google.com/kubernetes-engine/docs/concepts/verticalpodautoscaler
+  verticalPodAutoscaler:
+    enabled: true
+
+  externalSecret:
+    enabled: true
+    name: talabat-observability-r2d2-bot
+    vaultRole: external-secrets
+    vaultMountPoint: kubernetes-shared-prod-main-cluster
+    vaultPath: secret/data/sre/talabat-observability/observability-bot/prod
+    dataFrom:
+      - secret/data/sre/talabat-observability/observability-bot/prod
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+### list of alert policies each with name and list of alerts(each with name query threshold)
+alertpolicy:
+## overiding standard alert policy of cpu created by o11y team
+- name: alert_cpu
+  alerts:
+  - name: cpu
+    query: xyz
+    threshold: 70
+## providing custom alert policies 
+- name: Test_Application_Policy_1 ### variable application name we get from values.yaml or argo env variable or param
+  alerts:
+  - name: test_alert_conditiom_1_1
+    query: xyz
+    threshold: 10
+  - name: test_alert_conditiom_1_4
+    query: xyz_2
+    threshold: 5
+
+- name: Custom_3 ### variable application name we get from values.yaml or argo env variable or param
+  alerts:
+  - name: test_alert_conditiom_3_1
+    query: xyz
+    threshold: 5
+  - name: test_alert_conditiom_3_2
+    query: xyz_2
+    threshold: 5
+
+### overriding standard alert policy
+observability:
+  standardAlertPolicy:
+    alert_cpu:
+      name: cpu
+      query: xyz
+      threshold: 60
+    alert_errors:
+      name: 5xx
+      query: xyz_2
+      threshold: 100
+    alert_custom_1:
+      name: custom_1
+      query: xyz_2
+      threshold: 12
+  ### provding list of custom alert policies
+  customAlertPolicies:
+  - name: Custom_1
+    alerts:
+    - name: test_alert_conditiom_1_1
+      query: xyz
+      threshold: 10
+    - name: test_alert_conditiom_1_4
+      query: xyz_2
+      threshold: 5
+
+  - name: Custom_3
+    alerts:
+    - name: test_alert_conditiom_3_1
+      query: xyz
+      threshold: 5
+    - name: test_alert_conditiom_3_2
+      query: xyz_2
+      threshold: 5
+
+
+
+
+
