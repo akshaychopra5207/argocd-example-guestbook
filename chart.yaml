@@ -1,0 +1,13 @@
+apiVersion: v2
+name: argocd-example-guestbook 
+description: A Helm chart for argocd example guestbook
+home: https://github.com/argoproj/argocd-example-apps.git
+type: application
+version: 0.0.1
+appVersion: "0.0.1"
+sources:
+- https://github.com/argoproj/argocd-example-apps.git
+
+maintainers:
+- name: Akshay Chopra
+  email: akshaychopra5207@gmail.com
