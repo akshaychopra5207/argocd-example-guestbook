@@ -1,77 +1,62 @@
 
 ### list of alert policies each with name and list of alerts(each with name query threshold)
-alertpolicy:
-## overiding standard alert policy of cpu created by o11y team
-- name: alert_cpu
-  alerts:
-  - name: cpu
-    query: xyz
-    threshold: 70
-## providing custom alert policies 
-- name: Test_Application_Policy_1 ### variable application name we get from values.yaml or argo env variable or param
-  alerts:
-  - name: test_alert_conditiom_1_1
-    query: xyz
-    threshold: 10
-  - name: test_alert_conditiom_1_4
-    query: xyz_2
-    threshold: 5
+service-observability:
+  ### overriding standard alert policy
+  observability:
+    standardAlertPolicy:
+      alert_latency:
+        name: "latency alert"
+        query: xyz
+        threshold: 19
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
+    customAlertPolicies:
+    - name: Custom_1
+      alerts:
+      - name: "custom query alert guestbok"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
+      - name: "custom query alert 2"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
 
-- name: Custom_3 ### variable application name we get from values.yaml or argo env variable or param
-  alerts:
-  - name: test_alert_conditiom_3_1
-    query: xyz
-    threshold: 5
-  - name: test_alert_conditiom_3_2
-    query: xyz_2
-    threshold: 5
+    - name: Custom_3
+      alerts:
+      - name: "custom query alert guestbook"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 360
+      - name: "custom query alert 2"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
 
-### overriding standard alert policy
-observability:
-  standardAlertPolicy:
-    alert_cpu:
-      name: cpu
-      query: xyz
-      threshold: 60
-    alert_errors:
-      name: 5xx
-      query: xyz_2
-      threshold: 100
-    alert_custom_1:
-      name: custom_1
-      query: xyz_2
-      threshold: 12
-  ### provding list of custom alert policies
-  customAlertPolicies:
-  - name: Custom_1
-    alerts:
-    - name: test_alert_conditiom_1_1
-      query: xyz
-      threshold: 10
-    - name: test_alert_conditiom_1_4
-      query: xyz_2
-      threshold: 5
-
-  - name: Custom_3
-    alerts:
-    - name: test_alert_conditiom_3_1
-      query: xyz
-      threshold: 5
-    - name: test_alert_conditiom_3_2
-      query: xyz_2
-      threshold: 5
-
-
-resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 500m
-    memory: 5123Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-
-
+### overiding depependent chart values.yaml for example service application
+minecraft-exporter:
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 500m
+      memory: 7800Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
