@@ -7,7 +7,7 @@ service-observability:
       alert_latency:
         name: "latency alert"
         query: xyz
-        threshold: 69
+        threshold: 79
         threshold_occurences: AT_LEAST_ONCE
         operator: BELOW
         priority: CRITICAL
