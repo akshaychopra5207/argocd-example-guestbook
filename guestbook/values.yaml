@@ -7,7 +7,7 @@ service-observability:
       alert_latency:
         name: "latency alert"
         query: xyz
-        threshold: 78
+        threshold: 69
         threshold_occurences: AT_LEAST_ONCE
         operator: BELOW
         priority: CRITICAL
@@ -17,7 +17,7 @@ service-observability:
       alerts:
       - name: "custom query alert guestbok"
         query: xyz
-        threshold: 10
+        threshold: 69
         threshold_occurences: AT_LEAST_ONCE
         operator: BELOW
         priority: CRITICAL
