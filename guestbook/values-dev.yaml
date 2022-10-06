@@ -1,0 +1,62 @@
+
+### list of alert policies each with name and list of alerts(each with name query threshold)
+service-observability:
+  ### overriding standard alert policy
+  observability:
+    standardAlertPolicy:
+      alert_latency:
+        name: "latency alert"
+        query: xyz
+        threshold: 769
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
+    customAlertPolicies:
+    - name: Custom_1
+      alerts:
+      - name: "custom query alert guestbok"
+        query: xyz
+        threshold: 69
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
+      - name: "custom query alert 2"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
+
+    - name: Custom_3
+      alerts:
+      - name: "custom query alert guestbook"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 360
+      - name: "custom query alert 2"
+        query: xyz
+        threshold: 10
+        threshold_occurences: AT_LEAST_ONCE
+        operator: BELOW
+        priority: CRITICAL
+        threshold_duration: 180
+
+### overiding depependent chart values.yaml for example service application
+minecraft-exporter:
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 700m
+      memory: 7800Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
