@@ -4,7 +4,7 @@ service-observability:
   ### overriding standard alert policy
   observability:
     standardAlertPolicy:
-      alert_latenci:
+      alert_latency:
         name: "latency alert"
         query: xyz
         threshold: 69
