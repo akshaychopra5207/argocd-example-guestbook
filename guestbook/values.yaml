@@ -55,7 +55,7 @@ minecraft-exporter:
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     limits:
-      cpu: 501m
+      cpu: 569m
       memory: 7800Mi
     requests:
       cpu: 100m
